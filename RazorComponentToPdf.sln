@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33516.290
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RazorComponentToPdf", "RazorComponentToPdf\RazorComponentToPdf.csproj", "{1C0BEE93-75D8-4A84-8FD1-15123CC36462}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RazorComponentToPdfBlazor", "RazorComponentToPdfBlazor\RazorComponentToPdfBlazor.csproj", "{AFC54A00-1CAA-4BF6-B56D-222A0186241D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1C0BEE93-75D8-4A84-8FD1-15123CC36462}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1C0BEE93-75D8-4A84-8FD1-15123CC36462}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1C0BEE93-75D8-4A84-8FD1-15123CC36462}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1C0BEE93-75D8-4A84-8FD1-15123CC36462}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AFC54A00-1CAA-4BF6-B56D-222A0186241D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AFC54A00-1CAA-4BF6-B56D-222A0186241D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AFC54A00-1CAA-4BF6-B56D-222A0186241D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AFC54A00-1CAA-4BF6-B56D-222A0186241D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9C2EE79D-435A-4AAD-8795-725E683651F2}
+	EndGlobalSection
+EndGlobal
