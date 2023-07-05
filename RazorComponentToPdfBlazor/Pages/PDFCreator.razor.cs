@@ -12,14 +12,14 @@ namespace RazorComponentToPdfBlazor.Pages
     public partial class PDFCreator
     {
         [Inject] private IJSRuntime JS { get; set; } = null!;
-        [Inject] private Factory Factory { get; set; }
+        [Inject] private Factory Factory { get; set; } = null!;
 
 
-
-        private async Task GeneratePdf()
+		private async Task GeneratePdf()
         {
-			Converter<PdfDoc1> converter = Factory.CreateConverter<PdfDoc1>();
+			
 
+            //============ PDF DATA ===========
 
             List<SampleModel> model = new();
             SampleModel line1 = new()
@@ -64,22 +64,30 @@ namespace RazorComponentToPdfBlazor.Pages
 			};
 			model.Add(line3);
 
-		
 
-            converter.Parameter(c => c.Model, model);
+
+            //=============== INSTANTIATE LIBRARY =============
+
+
+            Converter<PdfDoc1> converter = Factory.CreateConverter<PdfDoc1>();
+
+
+
+			//=============== RENDER COMPONENT INTO HTML =============
+			
+			converter.Parameter(c => c.Model, model);
             string html = converter.Render();
 
 
 
+			//=============== PDF SETUP =============
 
-            GlobalSettings globalSettings = new GlobalSettings()
+			GlobalSettings globalSettings = new GlobalSettings()
             {
                 ColorMode = ColorMode.Color,
                 Orientation = Orientation.Landscape,
                 PaperSize = PaperKind.A4,
                 Margins = new MarginSettings { Top = 18, Bottom = 18 }
-
-
             };
 
             ObjectSettings objectSettings = new ObjectSettings()
@@ -92,12 +100,15 @@ namespace RazorComponentToPdfBlazor.Pages
             };
 
 
-            byte[] bytes = converter.Convert(globalSettings, objectSettings);
+
+			//=============== CONVERT HTML INTO PDF =============
+
+			byte[] bytes = converter.Convert(globalSettings, objectSettings);
 
 
 
 
-
+            //========== FILE DOWNLOAD ===========
 
             using (MemoryStream ms = new(bytes))
             {
