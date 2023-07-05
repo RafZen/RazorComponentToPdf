@@ -1,45 +1,114 @@
 ﻿@page "/PdfDoc1"
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<style>
-		p {
-			width: 80%;
-		}
-	</style>
-	<div style="font-family:Calibri">
-		PDF CREATION TEST
 
-	</div>
-	<div style="text-align:center;">
-		<table border="1" style="display:inline-block">
-			<thead>
+<div style="font-family:sans-serif; text-align:center;">
+
+
+
+<table style="width:100%; text-align:left">
+	<tbody>
+		<tr>
+			<td>
+				DB Group (Europe) Limited<br/>
+				Pinnacle House<br />
+				Mill Road Industrial Estate<br />
+				Linlithgow<br />
+				EH49 7SF<br />
+				01506 848848<br />
+				accounts@dbgroupeurope.com<br />
+				671308052<br />
+			</td>
+			<td style="text-align:right">
+					<img src=@DBGroupImageFolder/>
+				@*<img src="C:\Users\rafal.szabelski\source\repos\RazorComponentToPdf\RazorComponentToPdfBlazor\wwwroot\Images\DBGroup2.png" />*@
+			</td>
+		</tr>
+		<tr style="height:2rem">
+			
+		</tr>
+		<tr>
+			<td>
+					CREDIT TO DUE DATE : 31 May 2023<br />
+					Aver Property General Partner Ltd TERMS : Net 30 days<br />
+					C/o Lee Baron , 85 Tottenham Court Road<br />
+					London<br />
+					W1T 4TQ<br />
+					DB<br />
+			</td>
+			<td>
+					CREDIT MEMO NO. : APG/31/05/23<br />
+					DATE : 31 May 2023<br />
+					CREDIT TO DUE DATE : 31 May 2023<br />
+					Aver Property General Partner Ltd TERMS : Net 30 days<br />
+			</td>
+		</tr>
+	</tbody>
+</table>
+
+
+	
+<br/>
+<br/>
+
+<div style="text-align:center;">
+	<table border="1" style="width:100%">
+		<thead>
+			<tr>
+				<th>Description</th>
+				<th>Start Date</th>
+				<th>End Date</th>
+				<th>Meter Reading Start</th>
+				<th>Meter Reading Current</th>
+				<th>Quantity</th>
+				<th>Rate</th>
+				<th>VAT</th>
+				<th>Amount</th>				
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (Data.SampleModel mod in Model)
+			{
 				<tr>
-					<th>ID</th>
-					<th>Name</th>
-					<th>Address</th>
+					<td>@mod.Description</td>
+					<td>@mod.StartDate</td>
+					<td>@mod.EndDate</td>
+					<td>@mod.MeterReadingStart</td>
+					<td>@mod.MeterReadingCurrent</td>
+					<td>@mod.Quantity</td>
+					<td>@mod.Rate</td>
+					<td>@mod.Vat</td>
+					<td>@mod.Amount</td>
+						
 				</tr>
-			</thead>
-			<tbody>
-				@foreach (Data.SampleModel mod in Model)
-				{
-					<tr>
-						<td style="background-color:red">@mod.id</td>
-						<td>@mod.name</td>
-						<td>@mod.address</td>
-					</tr>
-				}
-			</tbody>
-		</table>
-	</div>
-</head>
-<body>
-	<h1 style="font-family:Arial">Some heading</h1>
-	<p style="font-family:sans-serif">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-</body>
-</html>
+			}
+		</tbody>
+	</table>
+</div>
+
+
+<br/>
+<br />
+
+	<p>
+		DB Group implements a Quality System, certified by ISO Assured in ISO 9001:2015, ISO 14001:2015 and ISO 45001:2018<br/>
+		Company No. SC252194
+	</p>
+
+</div>
 
 @code {
 	[Parameter] public List<Data.SampleModel>? Model { get; set; } = new();
+	private string runDir;
+	private string imagesFolder;
+	private string DBGroupImageFolder;
+
+	protected override void OnInitialized()
+	{
+		runDir = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly()?.Location);
+		imagesFolder = System.IO.Path.Combine(runDir, @"wwwroot\Images");
+		DBGroupImageFolder = System.IO.Path.Combine(imagesFolder, "DBGroup2.png");
+	}
+
+
+		
 
 }

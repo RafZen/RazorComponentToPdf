@@ -22,8 +22,49 @@ namespace RazorComponentToPdfBlazor.Pages
 
 
             List<SampleModel> model = new();
-            model.Add(new SampleModel() { id = 1, name = "Rafal", address = "Swindon" });
-            model.Add(new SampleModel() { id = 2, name = "John", address = "London" });
+            SampleModel line1 = new()
+            {
+				Description="3rd Floor Rear, Scottish Life House, 154-155 Great Charles Street Estate,Birmingham, B3 3LG",
+                StartDate="16/12/2022",
+                EndDate="30/03/2023",
+                MeterReadingStart="00575216",
+                MeterReadingCurrent="00602665",
+                Quantity =  "27,449",
+                Rate = "0.6659",
+                Vat="20",
+                Amount="18,278.29"
+			};
+            model.Add(line1);
+
+			SampleModel line2 = new()
+			{
+				Description = "Quorterly charge",
+				StartDate = "16/12/2022",
+				EndDate = "30/03/2023",
+				MeterReadingStart = "",
+				MeterReadingCurrent = "",
+				Quantity = "1",
+				Rate = "50.85",
+				Vat = "20",
+				Amount = "50.85"
+			};
+			model.Add(line2);
+
+			SampleModel line3 = new()
+			{
+				Description = "Feed in Tariff",
+				StartDate = "16/12/2022",
+				EndDate = "30/03/2023",
+				MeterReadingStart = "",
+				MeterReadingCurrent = "",
+				Quantity = "27,449",
+				Rate = "0.00821",
+				Vat = "20",
+				Amount = "225.36"
+			};
+			model.Add(line3);
+
+		
 
             converter.Parameter(c => c.Model, model);
             string html = converter.Render();
@@ -34,9 +75,10 @@ namespace RazorComponentToPdfBlazor.Pages
             GlobalSettings globalSettings = new GlobalSettings()
             {
                 ColorMode = ColorMode.Color,
-                Orientation = Orientation.Portrait,
+                Orientation = Orientation.Landscape,
                 PaperSize = PaperKind.A4,
                 Margins = new MarginSettings { Top = 18, Bottom = 18 }
+
 
             };
 
@@ -44,7 +86,7 @@ namespace RazorComponentToPdfBlazor.Pages
             {
                 PagesCount = true,
                 HtmlContent = html,
-                WebSettings = { DefaultEncoding = "utf-8", EnableIntelligentShrinking = false },
+                WebSettings = { DefaultEncoding = "utf-8", EnableIntelligentShrinking = false, LoadImages = true },
                 HeaderSettings = { FontSize = 10, Right = "Page [page] of [toPage]", Line = true, },
                 FooterSettings = { FontSize = 8, Center = "ZEN PDF demo", Line = true }
             };

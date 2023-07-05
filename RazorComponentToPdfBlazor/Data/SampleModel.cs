@@ -2,9 +2,16 @@
 {
     public class SampleModel
     {
-        public int id { get; set; } 
-        public string name { get; set; }
-        public string address { get; set; }
+        public string Description { get; set; } 
+        public string StartDate { get; set; }
+        public string EndDate { get; set; }
+        public string MeterReadingStart { get; set; }
+        public string MeterReadingCurrent { get; set; }
+        public string Quantity { get; set; }
+        public string Rate { get; set; }
+        public string Vat { get; set; }
+        public string Amount { get; set; } 
+
         
     }
 }
