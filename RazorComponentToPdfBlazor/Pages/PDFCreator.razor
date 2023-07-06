@@ -1,6 +1,29 @@
 ﻿@page "/PDFCreator"
 <h3>PDFCreator</h3>
 
-<button @onclick="GeneratePdf">
+<button @onclick="@DownloadPDF">
     Generate pdf
 </button>
+<br />
+<br />
+<br />
+<br />
+
+<button @onclick="StartStressTest">
+    Stress - test PDF Generation
+</button>
+
+<button @onclick="StopStressTest">
+    Stop Stress - Test
+</button>
+
+
+<button @onclick="CollectGarbage">
+    CollectGarbage
+</button>
+
+
+<br />
+<div>
+    Counter:<span>@PDFCounter</span>
+</div>

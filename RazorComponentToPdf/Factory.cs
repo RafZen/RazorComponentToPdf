@@ -60,7 +60,7 @@ namespace RazorComponentToPdf
 
 
 
-		private SafeFileHandle LoadwkHtmlToPdf()
+		private void LoadwkHtmlToPdf()
 		{
 			CustomAssemblyLoadContext wkhtmltopdfAssemblyLoadContext = new CustomAssemblyLoadContext();
 
@@ -93,8 +93,8 @@ namespace RazorComponentToPdf
 			}
 
 
-			IntPtr p = wkhtmltopdfAssemblyLoadContext.LoadUnmanagedLibrary(wkHtmlToPdfPath);
-			return new SafeFileHandle(p, true);
+			wkhtmltopdfAssemblyLoadContext.LoadUnmanagedLibrary(wkHtmlToPdfPath);
+			
 		}
 
 
