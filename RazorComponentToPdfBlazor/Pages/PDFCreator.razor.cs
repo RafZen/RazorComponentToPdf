@@ -4,69 +4,173 @@ using Microsoft.JSInterop;
 using RazorComponentToPdf;
 using RazorComponentToPdfBlazor.Data;
 using RazorComponentToPdfBlazor.PDFComponents;
+using System;
+using IronPdf;
 
 
 namespace RazorComponentToPdfBlazor.Pages
 {
-   
-    public partial class PDFCreator
-    {
-        [Inject] private IJSRuntime JS { get; set; } = null!;
-        [Inject] private Factory Factory { get; set; } = null!;
+
+	public partial class PDFCreator
+	{
+		[Inject] private IJSRuntime JS { get; set; } = null!;
+		[Inject] private Factory Factory { get; set; } = null!;
 		private CancellationTokenSource cancellationTokenSource;
 		private int PDFCounter = 0;
+		private ChromePdfRenderer ironRenderer;
 
-		private async Task DownloadPDF()
-        {
+        private Converter<PdfDoc1> converter;
 
-			byte[] bytes = await GeneratePDF();
+
+		public PDFCreator()
+		{
+			ironRenderer = new ChromePdfRenderer();
+			ironRenderer.RenderingOptions.PaperOrientation = IronPdf.Rendering.PdfPaperOrientation.Landscape;
+			ironRenderer.RenderingOptions.MarginLeft = 10;
+			ironRenderer.RenderingOptions.MarginRight = 10;
+			ironRenderer.RenderingOptions.MarginTop = 10;
+			ironRenderer.RenderingOptions.MarginBottom = 10;
+
+
+		}
+
+
+        private async Task DownloadPDF_DinkToPdf()
+		{
+
+            string html = await GenerateHtml();
+
+            byte[] bytes = await GeneratePdf_Dink(html);
+
 
             //========== FILE DOWNLOAD ===========
 
             using (MemoryStream ms = new(bytes))
+			{
+				using (var streamRef = new DotNetStreamReference(ms))
+				{
+					await JS.InvokeVoidAsync("saveAsFile", "Test.pdf", streamRef);
+				}
+			}
+
+		}
+
+
+		private async Task StartStressTest_Dink()
+		{
+			cancellationTokenSource = new CancellationTokenSource();
+
+			while (!cancellationTokenSource.IsCancellationRequested)
+			{
+				string html = await GenerateHtml();
+                byte[] bytes = await GeneratePdf_Dink(html);
+
+                PDFCounter++;
+				StateHasChanged();
+			}
+
+		}
+
+
+		private void StopStressTest()
+		{
+			cancellationTokenSource.Cancel();
+		}
+
+
+		//--------------------------------------------------------------------
+
+
+
+
+
+		private async Task DownloadPDF_Iron()
+		{
+            cancellationTokenSource = new CancellationTokenSource();
+
+            //ironRenderer = new ChromePdfRenderer();
+            //ironRenderer.RenderingOptions.PaperOrientation = IronPdf.Rendering.PdfPaperOrientation.Landscape;
+            //ironRenderer.RenderingOptions.MarginLeft = 10;
+            //ironRenderer.RenderingOptions.MarginRight = 10;
+            //ironRenderer.RenderingOptions.MarginTop = 10;
+            //ironRenderer.RenderingOptions.MarginBottom = 10;
+
+
+            string html = await GenerateHtml();
+
+
+
+			using (PdfDocument pdfDoc = await ironRenderer.RenderHtmlAsPdfAsync(html))
+			{
+
+				using (MemoryStream ms = pdfDoc.Stream)
+				{
+
+					using (var streamRef = new DotNetStreamReference(ms))
+					{
+						await JS.InvokeVoidAsync("saveAsFile", "Test.pdf", streamRef);
+					}
+				}
+			}
+
+		}
+
+
+
+        private async Task StartStressTest_Iron()
+        {
+            cancellationTokenSource = new CancellationTokenSource();
+
+            string html = await GenerateHtml();
+
+
+            while (!cancellationTokenSource.IsCancellationRequested)
             {
-                using (var streamRef = new DotNetStreamReference(ms))
-                {
-                    await JS.InvokeVoidAsync("saveAsFile", "Test.pdf", streamRef);
-                }
+
+				
+				using (PdfDocument pdfDoc = await ironRenderer.RenderHtmlAsPdfAsync(html))
+				{
+
+					using (MemoryStream ms = pdfDoc.Stream)
+					{
+
+						using (var streamRef = new DotNetStreamReference(ms))
+						{
+							// await JS.InvokeVoidAsync("saveAsFile", "Test.pdf", streamRef);
+						}
+					}
+				}
+
+				PDFCounter++;
+                StateHasChanged();
             }
 
         }
 
 
-        private async Task StartStressTest()
-        {
-            cancellationTokenSource = new CancellationTokenSource();
-          
-			while (!cancellationTokenSource.IsCancellationRequested)
-			{
-				byte[] bytes = await GeneratePDF();
-				PDFCounter++;
-				StateHasChanged();
-			}
-
-        }
 
 
-        private void StopStressTest()
-        {
-            cancellationTokenSource.Cancel();
-        }
 
-
-		private void CollectGarbage()
+        private void CollectGarbage()
 		{
 			GC.Collect();
 		}
 
-        private async Task<byte[]> GeneratePDF()
-        {
+
+
+
+
+
+
+		private async Task<string> GenerateHtml()
+		{
 			return await Task.Run(() =>
 			{
+                converter = Factory.CreateConverter<PdfDoc1>();
 
-				//============ PDF DATA ===========
+                //============ PDF DATA ===========
 
-				List<SampleModel> model = new();
+                List<SampleModel> model = new();
 				SampleModel line1 = new()
 				{
 					Description = "3rd Floor Rear, Scottish Life House, 154-155 Great Charles Street Estate,Birmingham, B3 3LG",
@@ -114,16 +218,24 @@ namespace RazorComponentToPdfBlazor.Pages
 				//=============== INSTANTIATE LIBRARY =============
 
 
-				Converter<PdfDoc1> converter = Factory.CreateConverter<PdfDoc1>();
+				
 
 
 
 				//=============== RENDER COMPONENT INTO HTML =============
 
 				converter.Parameter(c => c.Model, model);
-				string html = converter.Render();
+				return converter.Render();
+
+			});
+		}
 
 
+
+		private async Task<byte[]> GeneratePdf_Dink(string html)
+		{
+			return await Task.Run(() =>
+			{
 
 				//=============== PDF SETUP =============
 
@@ -154,8 +266,8 @@ namespace RazorComponentToPdfBlazor.Pages
 				return bytes;
 
 			});
-		}
 
+		}
 
 	}
 }

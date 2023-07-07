@@ -1,22 +1,52 @@
 ﻿@page "/PDFCreator"
 <h3>PDFCreator</h3>
 
-<button @onclick="@DownloadPDF">
-    Generate pdf
-</button>
-<br />
-<br />
+<div>
+    Counter:<span>@PDFCounter</span>
+</div>
+
+
 <br />
 <br />
 
-<button @onclick="StartStressTest">
-    Stress - test PDF Generation
+
+
+<button @onclick="@DownloadPDF_DinkToPdf">
+    Generate pdf with Dink To Pdf
 </button>
+<br />
+<br />
+
+
+<button @onclick="StartStressTest_Dink">
+   Dink Stress - test PDF Generation
+</button>
+
+<br />
+<br />
+
+
+
+
+<button @onclick="@DownloadPDF_Iron">
+    Generate pdf with Iron PDF
+</button>
+
+
+<button @onclick="@StartStressTest_Iron">
+    Iron - Start stress test
+</button>
+
+<br />
+<br />
+
 
 <button @onclick="StopStressTest">
     Stop Stress - Test
 </button>
 
+<br />
+<br />
 
 <button @onclick="CollectGarbage">
     CollectGarbage
@@ -24,6 +54,3 @@
 
 
 <br />
-<div>
-    Counter:<span>@PDFCounter</span>
-</div>
