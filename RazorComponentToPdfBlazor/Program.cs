@@ -6,10 +6,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
-builder.Services.AddServerSideBlazor();
+builder.Services.AddServerSideBlazor().AddCircuitOptions(o =>
+	o.DetailedErrors = true
+);
+
 builder.Services.AddSingleton<WeatherForecastService>();
 
-builder.Services.AddSingleton<RazorComponentToPdf.Factory,RazorComponentToPdf.Factory>();
 
 var app = builder.Build();
 

@@ -1,11 +1,13 @@
-﻿using DinkToPdf;
+﻿
+
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
-using RazorComponentToPdf;
+
 using RazorComponentToPdfBlazor.Data;
 using RazorComponentToPdfBlazor.PDFComponents;
 using System;
-using IronPdf;
+using System.Diagnostics;
+
 
 
 namespace RazorComponentToPdfBlazor.Pages
@@ -13,68 +15,84 @@ namespace RazorComponentToPdfBlazor.Pages
 
 	public partial class PDFCreator
 	{
-		[Inject] private IJSRuntime JS { get; set; } = null!;
-		[Inject] private Factory Factory { get; set; } = null!;
-		private CancellationTokenSource cancellationTokenSource;
-		private int PDFCounter = 0;
-		private ChromePdfRenderer ironRenderer;
+		[Inject] private IJSRuntime _JS { get; set; } = null!;		
+		private CancellationTokenSource _cancellationTokenSource;
+		private int _PDFCounter = 0;
+		private ChromePdfRenderer _chromePdfRenderer;
+		private EvoPdf.HtmlToPdfConverter _evoConverter;
+		private Stopwatch _stopwatch;
+		private List<string> _errors = new List<string>();
 
-        private Converter<PdfDoc1> converter;
 
-
-		public PDFCreator()
+        public PDFCreator()
 		{
-			ironRenderer = new ChromePdfRenderer();
-			ironRenderer.RenderingOptions.PaperOrientation = IronPdf.Rendering.PdfPaperOrientation.Landscape;
-			ironRenderer.RenderingOptions.MarginLeft = 10;
-			ironRenderer.RenderingOptions.MarginRight = 10;
-			ironRenderer.RenderingOptions.MarginTop = 10;
-			ironRenderer.RenderingOptions.MarginBottom = 10;
+			IronPdf.Logging.Logger.EnableDebugging = true;
+            IronPdf.Logging.Logger.LogFilePath = "Default.log";
+
+            IronPdf.Logging.Logger.LoggingMode = IronPdf.Logging.Logger.LoggingModes.All;
+
+            _chromePdfRenderer = new ChromePdfRenderer();
+			_chromePdfRenderer.RenderingOptions.PaperOrientation = IronPdf.Rendering.PdfPaperOrientation.Landscape;
+			_chromePdfRenderer.RenderingOptions.MarginLeft = 10;
+			_chromePdfRenderer.RenderingOptions.MarginRight = 10;
+			_chromePdfRenderer.RenderingOptions.MarginTop = 10;
+			_chromePdfRenderer.RenderingOptions.MarginBottom = 10;
+			_chromePdfRenderer.RenderingOptions.Timeout = 3;
 
 
-		}
+			_evoConverter = new EvoPdf.HtmlToPdfConverter();
+			_evoConverter.PdfDocumentOptions.PdfPageSize = new EvoPdf.PdfPageSize();
+			_evoConverter.PdfDocumentOptions.PdfPageOrientation = EvoPdf.PdfPageOrientation.Landscape;
+			_evoConverter.PdfDocumentOptions.BottomMargin = 10;
+            _evoConverter.PdfDocumentOptions.TopMargin = 10;
+            _evoConverter.PdfDocumentOptions.LeftMargin = 10;
+            _evoConverter.PdfDocumentOptions.RightMargin = 10;
 
 
-        private async Task DownloadPDF_DinkToPdf()
-		{
-
-            string html = await GenerateHtml();
-
-            byte[] bytes = await GeneratePdf_Dink(html);
+			_stopwatch = new Stopwatch();
+        }
 
 
-            //========== FILE DOWNLOAD ===========
+  //      private async Task DownloadPDF_DinkToPdf()
+		//{
 
-            using (MemoryStream ms = new(bytes))
-			{
-				using (var streamRef = new DotNetStreamReference(ms))
-				{
-					await JS.InvokeVoidAsync("saveAsFile", "Test.pdf", streamRef);
-				}
-			}
+  //          string html = await GenerateHtml();
 
-		}
+  //          byte[] bytes = await GeneratePdf_Dink(html);
 
 
-		private async Task StartStressTest_Dink()
-		{
-			cancellationTokenSource = new CancellationTokenSource();
+  //          //========== FILE DOWNLOAD ===========
 
-			while (!cancellationTokenSource.IsCancellationRequested)
-			{
-				string html = await GenerateHtml();
-                byte[] bytes = await GeneratePdf_Dink(html);
+  //          using (MemoryStream ms = new(bytes))
+		//	{
+		//		using (var streamRef = new DotNetStreamReference(ms))
+		//		{
+		//			await _JS.InvokeVoidAsync("saveAsFile", "Test.pdf", streamRef);
+		//		}
+		//	}
 
-                PDFCounter++;
-				StateHasChanged();
-			}
+		//}
 
-		}
+
+		//private async Task StartStressTest_Dink()
+		//{
+		//	_cancellationTokenSource = new CancellationTokenSource();
+
+		//	while (!_cancellationTokenSource.IsCancellationRequested)
+		//	{
+		//		string html = await GenerateHtml();
+  //              byte[] bytes = await GeneratePdf_Dink(html);
+
+  //              _PDFCounter++;
+		//		StateHasChanged();
+		//	}
+
+		//}
 
 
 		private void StopStressTest()
 		{
-			cancellationTokenSource.Cancel();
+			_cancellationTokenSource.Cancel();
 		}
 
 
@@ -86,21 +104,15 @@ namespace RazorComponentToPdfBlazor.Pages
 
 		private async Task DownloadPDF_Iron()
 		{
-            cancellationTokenSource = new CancellationTokenSource();
+            _cancellationTokenSource = new CancellationTokenSource();
 
-            //ironRenderer = new ChromePdfRenderer();
-            //ironRenderer.RenderingOptions.PaperOrientation = IronPdf.Rendering.PdfPaperOrientation.Landscape;
-            //ironRenderer.RenderingOptions.MarginLeft = 10;
-            //ironRenderer.RenderingOptions.MarginRight = 10;
-            //ironRenderer.RenderingOptions.MarginTop = 10;
-            //ironRenderer.RenderingOptions.MarginBottom = 10;
 
 
             string html = await GenerateHtml();
 
 
 
-			using (PdfDocument pdfDoc = await ironRenderer.RenderHtmlAsPdfAsync(html))
+			using (PdfDocument pdfDoc = await _chromePdfRenderer.RenderHtmlAsPdfAsync(html))
 			{
 
 				using (MemoryStream ms = pdfDoc.Stream)
@@ -108,50 +120,127 @@ namespace RazorComponentToPdfBlazor.Pages
 
 					using (var streamRef = new DotNetStreamReference(ms))
 					{
-						await JS.InvokeVoidAsync("saveAsFile", "Test.pdf", streamRef);
+						await _JS.InvokeVoidAsync("saveAsFile", "Test.pdf", streamRef);
 					}
 				}
 			}
+
+
+            _PDFCounter++;
+            StateHasChanged();
+        }
+
+
+
+		private async Task StartStressTest_Iron()
+		{
+
+			_cancellationTokenSource = new CancellationTokenSource();
+			string html = await GenerateHtml();
+
+			_stopwatch.Start();
+			while (!_cancellationTokenSource.IsCancellationRequested)
+			{
+				try
+				{
+					using (PdfDocument pdfDoc = await _chromePdfRenderer.RenderHtmlAsPdfAsync(html))
+					{
+						using (MemoryStream ms = pdfDoc.Stream)
+						{
+							using (var streamRef = new DotNetStreamReference(ms))
+							{
+							}
+						}
+
+					}
+					_PDFCounter++;
+				}
+				catch (IronPdf.Exceptions.IronPdfNativeException ironPdfNativeException)
+				{
+					_errors.Add(ironPdfNativeException.Message);
+
+				}
+
+				StateHasChanged();
+
+			}
+			_stopwatch.Stop();
 
 		}
 
 
 
-        private async Task StartStressTest_Iron()
+
+        private async Task DownloadPDF_Evo()
         {
-            cancellationTokenSource = new CancellationTokenSource();
+            _cancellationTokenSource = new CancellationTokenSource();
+
 
             string html = await GenerateHtml();
+			
 
-
-            while (!cancellationTokenSource.IsCancellationRequested)
+            using (MemoryStream ms = new MemoryStream())
             {
+                _evoConverter.ConvertHtmlToStream(html, "/", ms);
+				ms.Seek(0, SeekOrigin.Begin);
+                using (var streamRef = new DotNetStreamReference(ms))
+                {
 
-				
-				using (PdfDocument pdfDoc = await ironRenderer.RenderHtmlAsPdfAsync(html))
-				{
-
-					using (MemoryStream ms = pdfDoc.Stream)
-					{
-
-						using (var streamRef = new DotNetStreamReference(ms))
-						{
-							// await JS.InvokeVoidAsync("saveAsFile", "Test.pdf", streamRef);
-						}
-					}
-				}
-
-				PDFCounter++;
-                StateHasChanged();
+                    await _JS.InvokeVoidAsync("saveAsFile", "Test.pdf", streamRef);
+                }
             }
-
+            
+            _PDFCounter++;
+			await InvokeAsync(() => StateHasChanged());
         }
 
 
 
+		private async Task StartStressTest_Evo()
+		{
+			_cancellationTokenSource = new CancellationTokenSource();
 
 
-        private void CollectGarbage()
+			string html = await GenerateHtml();
+
+			await Task.Run(() =>
+			{
+
+				while (!_cancellationTokenSource.IsCancellationRequested)
+				{
+
+					using (MemoryStream ms = new MemoryStream())
+					{
+						_evoConverter.ConvertHtmlToStream(html, "/", ms);
+						ms.Seek(0, SeekOrigin.Begin);
+						using (var streamRef = new DotNetStreamReference(ms))
+						{
+
+						}
+					}
+
+					_PDFCounter++;
+					InvokeAsync(() => StateHasChanged());
+				}
+
+			});
+		}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            private void CollectGarbage()
 		{
 			GC.Collect();
 		}
@@ -166,7 +255,7 @@ namespace RazorComponentToPdfBlazor.Pages
 		{
 			return await Task.Run(() =>
 			{
-                converter = Factory.CreateConverter<PdfDoc1>();
+				BlazorTemplater.ComponentRenderer<PdfDoc1> componentRenderer = new();
 
                 //============ PDF DATA ===========
 
@@ -215,59 +304,52 @@ namespace RazorComponentToPdfBlazor.Pages
 
 
 
-				//=============== INSTANTIATE LIBRARY =============
-
-
-				
-
-
-
 				//=============== RENDER COMPONENT INTO HTML =============
 
-				converter.Parameter(c => c.Model, model);
-				return converter.Render();
-
+				componentRenderer.Set(p => p.Model, model);
+				return componentRenderer.Render();
+				
 			});
 		}
 
 
 
-		private async Task<byte[]> GeneratePdf_Dink(string html)
-		{
-			return await Task.Run(() =>
-			{
+		//private async Task<byte[]> GeneratePdf_Dink(string html)
+		//{
+		//	return await Task.Run(() =>
+		//	{
 
-				//=============== PDF SETUP =============
+		//		//=============== PDF SETUP =============
 
-				GlobalSettings globalSettings = new GlobalSettings()
-				{
-					ColorMode = ColorMode.Color,
-					Orientation = Orientation.Landscape,
-					PaperSize = PaperKind.A4,
-					Margins = new MarginSettings { Top = 18, Bottom = 18 }
-				};
+		//		GlobalSettings globalSettings = new GlobalSettings()
+		//		{
+		//			ColorMode = ColorMode.Color,
+		//			Orientation = Orientation.Landscape,
+		//			PaperSize = PaperKind.A4,
+		//			Margins = new MarginSettings { Top = 18, Bottom = 18 }
+		//		};
 
-				ObjectSettings objectSettings = new ObjectSettings()
-				{
-					PagesCount = true,
-					HtmlContent = html,
-					WebSettings = { DefaultEncoding = "utf-8", EnableIntelligentShrinking = false, LoadImages = true },
-					HeaderSettings = { FontSize = 10, Right = "Page [page] of [toPage]", Line = true, },
-					FooterSettings = { FontSize = 8, Center = "ZEN PDF demo", Line = true }
-				};
-
-
-
-				//=============== CONVERT HTML INTO PDF =============
-
-				byte[] bytes = converter.Convert(globalSettings, objectSettings);
+		//		ObjectSettings objectSettings = new ObjectSettings()
+		//		{
+		//			PagesCount = true,
+		//			HtmlContent = html,
+		//			WebSettings = { DefaultEncoding = "utf-8", EnableIntelligentShrinking = false, LoadImages = true },
+		//			HeaderSettings = { FontSize = 10, Right = "Page [page] of [toPage]", Line = true, },
+		//			FooterSettings = { FontSize = 8, Center = "ZEN PDF demo", Line = true }
+		//		};
 
 
-				return bytes;
 
-			});
+		//		//=============== CONVERT HTML INTO PDF =============
 
-		}
+		//		byte[] bytes = converter.Convert(globalSettings, objectSettings);
+
+
+		//		return bytes;
+
+		//	});
+
+		//}
 
 	}
 }

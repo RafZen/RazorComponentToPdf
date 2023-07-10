@@ -7,7 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\RazorComponentToPdf\RazorComponentToPdf.csproj" />
+    <PackageReference Include="BlazorTemplater" Version="1.5.1" />
+    <PackageReference Include="EvoPdf.HtmlToPdf.NetCore" Version="9.0.0" />
+    <PackageReference Include="IronPdf" Version="2023.7.4" />
   </ItemGroup>
 
   <ItemGroup>

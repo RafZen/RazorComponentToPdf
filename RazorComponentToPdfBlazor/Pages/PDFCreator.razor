@@ -2,7 +2,7 @@
 <h3>PDFCreator</h3>
 
 <div>
-    Counter:<span>@PDFCounter</span>
+    Counter:<span>@_PDFCounter</span>
 </div>
 
 
@@ -10,7 +10,7 @@
 <br />
 
 
-
+@* 
 <button @onclick="@DownloadPDF_DinkToPdf">
     Generate pdf with Dink To Pdf
 </button>
@@ -20,7 +20,7 @@
 
 <button @onclick="StartStressTest_Dink">
    Dink Stress - test PDF Generation
-</button>
+</button> *@
 
 <br />
 <br />
@@ -36,9 +36,25 @@
 <button @onclick="@StartStressTest_Iron">
     Iron - Start stress test
 </button>
+<span>&nbsp;@_stopwatch.Elapsed</span>
 
 <br />
 <br />
+
+
+<button @onclick="@DownloadPDF_Evo">
+    Evo - Generate pdf
+</button>
+
+
+<button @onclick="@StartStressTest_Evo">
+    Evo - Start stress test
+</button>
+
+<br />
+<br />
+
+
 
 
 <button @onclick="StopStressTest">
@@ -54,3 +70,11 @@
 
 
 <br />
+
+<br />
+Errors:
+<br />
+@for(int i=0; i<_errors.Count;i++)
+{
+    <div @key=i >@_errors[i]</div>
+}
