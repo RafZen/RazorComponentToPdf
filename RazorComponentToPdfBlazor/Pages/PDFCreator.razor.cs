@@ -26,10 +26,10 @@ namespace RazorComponentToPdfBlazor.Pages
 
         public PDFCreator()
 		{
-			IronPdf.Logging.Logger.EnableDebugging = true;
-            IronPdf.Logging.Logger.LogFilePath = "Default.log";
+			//IronPdf.Logging.Logger.EnableDebugging = true;
+   //         IronPdf.Logging.Logger.LogFilePath = "Default.log";
 
-            IronPdf.Logging.Logger.LoggingMode = IronPdf.Logging.Logger.LoggingModes.All;
+   //         IronPdf.Logging.Logger.LoggingMode = IronPdf.Logging.Logger.LoggingModes.All;
 
             _chromePdfRenderer = new ChromePdfRenderer();
 			_chromePdfRenderer.RenderingOptions.PaperOrientation = IronPdf.Rendering.PdfPaperOrientation.Landscape;
@@ -230,24 +230,10 @@ namespace RazorComponentToPdfBlazor.Pages
 
 
 
-
-
-
-
-
-
-
-
-
-
-            private void CollectGarbage()
+		private void CollectGarbage()
 		{
 			GC.Collect();
 		}
-
-
-
-
 
 
 
