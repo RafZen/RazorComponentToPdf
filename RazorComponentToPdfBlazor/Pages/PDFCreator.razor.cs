@@ -27,18 +27,18 @@ namespace RazorComponentToPdfBlazor.Pages
 
         public PDFCreator()
 		{
-			//IronPdf.Logging.Logger.EnableDebugging = true;
-   //         IronPdf.Logging.Logger.LogFilePath = "Default.log";
+			
+			IronPdf.Logging.Logger.EnableDebugging = true;
+			IronPdf.Logging.Logger.LogFilePath = "IronPdf.log";
+			IronPdf.Logging.Logger.LoggingMode = IronPdf.Logging.Logger.LoggingModes.All;
 
-   //         IronPdf.Logging.Logger.LoggingMode = IronPdf.Logging.Logger.LoggingModes.All;
-
-            _chromePdfRenderer = new ChromePdfRenderer();
+			_chromePdfRenderer = new ChromePdfRenderer();
 			_chromePdfRenderer.RenderingOptions.PaperOrientation = IronPdf.Rendering.PdfPaperOrientation.Landscape;
 			_chromePdfRenderer.RenderingOptions.MarginLeft = 10;
 			_chromePdfRenderer.RenderingOptions.MarginRight = 10;
 			_chromePdfRenderer.RenderingOptions.MarginTop = 10;
 			_chromePdfRenderer.RenderingOptions.MarginBottom = 10;
-			_chromePdfRenderer.RenderingOptions.Timeout = 3;
+			//_chromePdfRenderer.RenderingOptions.Timeout = 10;
 
 
 
