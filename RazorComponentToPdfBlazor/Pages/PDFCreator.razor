@@ -8,24 +8,8 @@
     CPU threads:@_maxConcurrentRequests
 </div>
 <div>
-    Remaining CPU threads:@_semaphore.CurrentCount;
+    Remaining CPU threads:@_semaphore.CurrentCount
 </div>
-
-<br />
-<br />
-
-
-@* 
-<button @onclick="@DownloadPDF_DinkToPdf">
-    Generate pdf with Dink To Pdf
-</button>
-<br />
-<br />
-
-
-<button @onclick="StartStressTest_Dink">
-   Dink Stress - test PDF Generation
-</button> *@
 
 <br />
 <br />
@@ -42,19 +26,6 @@
     Iron - Start stress test
 </button>
 <span>&nbsp;@_stopwatch.Elapsed</span>
-
-<br />
-<br />
-
-
-<button @onclick="@DownloadPDF_Evo">
-    Evo - Generate pdf
-</button>
-
-
-<button @onclick="@StartStressTest_Evo">
-    Evo - Start stress test
-</button>
 
 <br />
 <br />

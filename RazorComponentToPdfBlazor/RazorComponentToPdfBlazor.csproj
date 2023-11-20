@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <PackageReference Include="BlazorTemplater" Version="1.5.1" />
-    <PackageReference Include="EvoPdf.HtmlToPdf.NetCore" Version="9.0.0" />
     <PackageReference Include="IronPdf" Version="2023.11.8" />
   </ItemGroup>
 
