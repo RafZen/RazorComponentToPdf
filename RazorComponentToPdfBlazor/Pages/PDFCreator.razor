@@ -4,7 +4,12 @@
 <div>
     Counter:<span>@_PDFCounter</span>
 </div>
-
+<div>
+    CPU threads:@_maxConcurrentRequests
+</div>
+<div>
+    Remaining CPU threads:@_semaphore.CurrentCount;
+</div>
 
 <br />
 <br />

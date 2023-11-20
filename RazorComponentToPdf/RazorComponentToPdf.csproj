@@ -9,7 +9,6 @@
   <ItemGroup>
     <PackageReference Include="BlazorTemplater" Version="1.5.1" />
     <PackageReference Include="DinkToPdf" Version="1.0.8" />
-    <PackageReference Include="IronPdf" Version="2023.7.4" />
   </ItemGroup>
 
   <ItemGroup>

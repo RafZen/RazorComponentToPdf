@@ -22,7 +22,8 @@ namespace RazorComponentToPdfBlazor.Pages
 		private EvoPdf.HtmlToPdfConverter _evoConverter;
 		private Stopwatch _stopwatch;
 		private List<string> _errors = new List<string>();
-
+		private int _maxConcurrentRequests;
+		private SemaphoreSlim _semaphore;
 
         public PDFCreator()
 		{
@@ -50,6 +51,9 @@ namespace RazorComponentToPdfBlazor.Pages
 
 
 			_stopwatch = new Stopwatch();
+
+            _maxConcurrentRequests = Environment.ProcessorCount;
+            _semaphore = new SemaphoreSlim(_maxConcurrentRequests);
         }
 
 
@@ -137,10 +141,14 @@ namespace RazorComponentToPdfBlazor.Pages
 
 			_cancellationTokenSource = new CancellationTokenSource();
 			string html = await GenerateHtml();
+       
 
-			_stopwatch.Start();
+            _stopwatch.Start();
 			while (!_cancellationTokenSource.IsCancellationRequested)
 			{
+				
+				await _semaphore.WaitAsync();
+
 				try
 				{
 					using (PdfDocument pdfDoc = await _chromePdfRenderer.RenderHtmlAsPdfAsync(html))
@@ -151,14 +159,17 @@ namespace RazorComponentToPdfBlazor.Pages
 							{
 							}
 						}
-
 					}
 					_PDFCounter++;
+					Thread.Sleep(100);
 				}
 				catch (IronPdf.Exceptions.IronPdfNativeException ironPdfNativeException)
 				{
 					_errors.Add(ironPdfNativeException.Message);
-
+				}
+				finally
+				{
+					_semaphore.Release();
 				}
 
 				StateHasChanged();
